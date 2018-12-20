@@ -1,8 +1,8 @@
 {
-  "name": "j-table",
+  "name": "j-strong-table",
   "version": "0.0.1",
   "description": "表格",
-  "main": "j-table",
+  "main": "j-strong-table",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server",
     "build": "cross-env NODE_ENV=production webpack -p"
