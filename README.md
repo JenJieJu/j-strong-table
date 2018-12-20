@@ -1,11 +1,11 @@
-# j-table
+# j-strong-table
 
 
 
 ### Installing
 
 ```
-    npm i j-table --save
+    npm i j-strong-table --save
 ```
 
 
