@@ -37,5 +37,13 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JenJieJu/j-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JenJieJu/j-table/issues"
+  },
+  "homepage": "https://github.com/JenJieJu/j-table#readme"
 }
