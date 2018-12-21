@@ -33,33 +33,17 @@
 </head>
 
 <body>
+    <div><button id="update">更新数据</button></div>
     <div id="table"></div>
+    <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript">
     (function() {
 
-        var data = [{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        }]
-
+        var data = window.data;
+        console.log(data);
         var table = new window.jTable('#table').setConfig({
             height: 500
         });
-
-        table.setData(data);
 
         table.setTitle([{
             label: '姓名',
@@ -100,9 +84,23 @@
             width: 100,
             fixed: 'right'
         }])
+
+        table.setData(data);
+
+
         table.render();
 
         console.log(table)
+
+
+        document.getElementById('update').addEventListener('click', () => {
+            var array = [].concat(data);
+            array.sort(function() {
+                return Math.random() > .5 ? -1 : 1;
+            })
+            table.setData(array);
+            table.render();
+        })
 
     })();
     </script>

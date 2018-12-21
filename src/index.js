@@ -8,7 +8,6 @@ if (!global || !global._babelPolyfill) {
 // 
 
 import './css.scss'
-import mData from './data.js'
 import { isArray } from './checkVariable.js'
 import { createElement, selectorElement, getDayDetail } from './tools.js'
 
@@ -49,6 +48,10 @@ export default window.jTable = class jTable {
      * @return {obj} table实例
      */
     render() {
+
+        if(this.container){
+            this.container.remove();
+        }
 
         const container = this.container = createElement('div');
         const center = createElement('div');
@@ -196,7 +199,7 @@ export default window.jTable = class jTable {
      */
     setData(data = []) {
 
-        data = mData;
+        // data = mData;
         if (isArray(data) === false) {
             console.warn(data);
             return

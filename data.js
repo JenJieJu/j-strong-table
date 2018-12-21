@@ -1,4 +1,4 @@
-export default [{
+window.data =  [{
         "authorityStatus": 4,
         "checkTime": "2018-12-19 09:24:57",
         "createTime": "2018-12-19 09:24:54",
