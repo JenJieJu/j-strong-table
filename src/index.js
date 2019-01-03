@@ -8,8 +8,9 @@ if (!global || !global._babelPolyfill) {
 // 
 
 import './css.scss'
-import { isArray } from './checkVariable.js'
+import { isArray, isFunction } from './checkVariable.js'
 import { createElement, selectorElement, getDayDetail } from './tools.js'
+import renderTreeHtml from './renderTreeHtml.js'
 
 export default window.jTable = class jTable {
     /**
@@ -18,12 +19,12 @@ export default window.jTable = class jTable {
      * @return {obj}          table实例
      */
     constructor(selector) {
-        this.dom = selectorElement(selector);
+        this.$dom = selectorElement(selector);
         // 数据
         this.data = [];
         this.titles = [];
         // 容器
-        this.container;
+        this.$container;
         this.height;
         // 中间表格
         this.$title;
@@ -49,11 +50,11 @@ export default window.jTable = class jTable {
      */
     render() {
 
-        if(this.container){
-            this.container.remove();
+        if (this.$container) {
+            this.$container.remove();
         }
 
-        const container = this.container = createElement('div');
+        const container = this.$container = createElement('div');
         const center = createElement('div');
         const left = createElement('div');
         const right = createElement('div');
@@ -64,9 +65,9 @@ export default window.jTable = class jTable {
         left.className = 'j-table-left';
         right.className = 'j-table-right';
 
-        this.container.style.height = this.height ? `${this.height}px` : '';
+        this.$container.style.height = this.height ? `${this.height}px` : '';
 
-        this.dom.appendChild(container);
+        this.$dom.appendChild(container);
         container.appendChild(center);
         container.appendChild(left);
         container.appendChild(right);
@@ -143,7 +144,7 @@ export default window.jTable = class jTable {
             }
 
             timer = setInterval(() => {
-                let maxWidth = self.container.clientWidth
+                let maxWidth = self.$container.clientWidth
                 if (preWidth != maxWidth) {
                     preWidth = maxWidth;
                     setWidth(preWidth);
@@ -283,13 +284,13 @@ export default window.jTable = class jTable {
 
             // 滚动内容
             if (type === 'body' || type === 'title') {
-                let className = this.container.className.replace(' j-left', '').replace(' j-right', '');
+                let className = this.$container.className.replace(' j-left', '').replace(' j-right', '');
                 if (x <= 0) {
-                    this.container.className = `${className} j-left`;
+                    this.$container.className = `${className} j-left`;
                 } else if (x >= this.bodyWidth - this.$body.clientWidth) {
-                    this.container.className = `${className} j-right`;
+                    this.$container.className = `${className} j-right`;
                 } else {
-                    this.container.className = className
+                    this.$container.className = className
                 }
             }
 
@@ -364,10 +365,38 @@ export default window.jTable = class jTable {
             tr.$data = d;
 
             let tds = this.titles.map((t) => {
-                let td = createElement('td');
-                td.$data = d;
-                td.innerHTML = `<div>${d[t.key]}</div>`;
 
+                let td = createElement('td');
+                let value,
+                    key = t.key,
+                    keys = key.split('.'),
+                    render = t.render,
+                    contentDom;
+
+                // 嵌套
+                if (keys.length > 1) {
+                    value = d;
+                    keys.map(k => {
+                        if (value !== undefined) {
+                            value = value[k];
+                        }
+                    })
+                } else {
+                    value = d[key];
+                }
+
+                if (isFunction(render)) {
+                    contentDom = render(d);
+                    if (contentDom !== undefined) {
+                        let div = createElement('div');
+                        contentDom = renderTreeHtml(div, contentDom, d);
+                        td.appendChild(div);
+                    }
+                } else {
+                    td.innerHTML = `<div>${value === undefined ? '' : value}</div>`;
+                }
+
+                td.$data = d;
                 tr.appendChild(td);
                 return td;
             })

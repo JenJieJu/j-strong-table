@@ -1,4 +1,7 @@
-window.data =  [{
+window.data = [{
+        "key": {
+            key: 'value'
+        },
         "authorityStatus": 4,
         "checkTime": "2018-12-19 09:24:57",
         "createTime": "2018-12-19 09:24:54",
@@ -53,6 +56,9 @@ window.data =  [{
         "userType": 3
     },
     {
+        "key": {
+            key: 'value'
+        },
         "authorityStatus": 4,
         "checkTime": "2018-12-17 16:31:25",
         "createTime": "2018-10-26 11:43:46",
@@ -690,6 +696,9 @@ window.data =  [{
         "userType": 3
     },
     {
+        "key": {
+            key: 'value'
+        },
         "authorityStatus": 4,
         "checkTime": "2018-12-05 10:37:39",
         "createTime": "2018-12-05 09:10:38",
@@ -961,6 +970,9 @@ window.data =  [{
         "userType": 3
     },
     {
+        "key": {
+            key: 'value'
+        },
         "authorityStatus": 4,
         "checkTime": "2018-11-28 17:27:56",
         "createTime": "2018-11-28 17:27:06",

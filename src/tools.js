@@ -49,3 +49,18 @@ export const watch = (obj, key, cb) => {
 export const selectorElement = selector => {
     return selector ? document.querySelectorAll(selector)[0] : undefined;
 }
+
+
+/**
+ * 通过html创建元素
+ * @param  {string} htmlString html
+ * @return {dom}            元素
+ */
+export const createElementFromHTML = (htmlString) =>{
+  var div = document.createElement('div');
+  div.innerHTML = htmlString.trim();
+
+  return div.firstChild; 
+}
+
+

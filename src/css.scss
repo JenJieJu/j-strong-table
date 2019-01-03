@@ -41,6 +41,23 @@
         th {
             padding: 12px;
             border-bottom: 1px solid #ebeef5;
+
+            * {
+                max-width: 100%;
+            }
+
+        }
+
+        th {
+            >div {
+                white-space: nowrap;
+            }
+        }
+
+        td {
+            >div {
+                word-wrap: break-word;
+            }
         }
     }
 

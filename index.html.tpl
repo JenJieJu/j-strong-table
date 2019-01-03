@@ -51,6 +51,11 @@
             width: 100,
             fixed: true
         }, {
+            label: '嵌套key.key',
+            key: 'key.key',
+            width: 100,
+            fixed: true
+        }, {
             label: '医生 ID',
             key: 'userId',
             width: 100
@@ -63,9 +68,57 @@
             key: 'hospitalId',
             width: 100
         }, {
-            label: '认证状态',
+            label: 'render',
             key: 'status',
-            width: 100
+            width: 100,
+            render: function(data) {
+                return [{
+                    html: '<div style="font-size:20px;">div1</div>',
+                    events: [{
+                        type: 'click',
+                        event: function() {
+                            console.log(this)
+                            alert('div1')
+                        }
+                    }]
+                }, {
+                    html: '<input type="text" />',
+                    events: [{
+                        type: 'keypress',
+                        event: function() {
+                            console.log(this)
+                        }
+                    }]
+                }, {
+                    html: '<div>div2</div>',
+                    events: [{
+                        type: 'mouseMove',
+                        event: function() {
+                            console.log(this)
+                            alert('div2')
+                        }
+                    }],
+                    child: [{
+                        html: '<span style="color:red;">span1</span>',
+                        events: [{
+                            type: 'click',
+                            event: function() {
+                                console.log(this)
+                                alert('span1')
+                            }
+                        }]
+                    }, {
+                        html: '<span style="color:green;">span2</span>',
+                        events: [{
+                            type: 'click',
+                            event: function() {
+                                console.log(this)
+                                alert('span2')
+                            }
+                        }]
+                    }]
+                }]
+            }
         }, {
             label: '科室',
             key: 'departments',
