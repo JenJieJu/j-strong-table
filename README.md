@@ -1,9 +1,6 @@
 # j-strong-table
 
-### DEMO
-```
-  <a href="//jenjieju.github.io/pc/#/jStrongTable">dome</a>
-```
+### <a href="//jenjieju.github.io/pc/#/jStrongTable">DEMO</a>
 
 ### Installing
 
