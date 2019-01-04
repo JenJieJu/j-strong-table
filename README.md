@@ -1,6 +1,9 @@
 # j-strong-table
 
-
+### DEMO
+```
+  <a href="//jenjieju.github.io/pc/#/jStrongTable">dome</a>
+```
 
 ### Installing
 
@@ -149,4 +152,5 @@
 0.0.2 create
 0.0.3 update
 0.0.4 新增rander函数(支持自定义渲染元素，具体格式看例子)
+0.0.5 add demo
 ```
