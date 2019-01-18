@@ -3,10 +3,16 @@
     overflow: hidden;
     border: 1px solid #ebeef5;
 
+    .j-center {
+        text-align: center;
+    }
+
     &,
     * {
         box-sizing: border-box;
     }
+
+
 
     colgroup {
         display: table-column-group;

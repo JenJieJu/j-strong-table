@@ -11,6 +11,7 @@ import './css.scss'
 import { isArray, isFunction } from './checkVariable.js'
 import { createElement, selectorElement, getDayDetail } from './tools.js'
 import renderTreeHtml from './renderTreeHtml.js'
+// import checkbox from './checkbox.js'
 
 export default window.jTable = class jTable {
     /**
@@ -23,6 +24,7 @@ export default window.jTable = class jTable {
         // 数据
         this.data = [];
         this.titles = [];
+        this.isSelectAll = false;
         // 容器
         this.$container;
         this.height;
@@ -52,6 +54,7 @@ export default window.jTable = class jTable {
 
         if (this.$container) {
             this.$container.remove();
+            this.isSelectAll = false;
         }
 
         const container = this.$container = createElement('div');
@@ -75,23 +78,6 @@ export default window.jTable = class jTable {
 
 
         let self = this;
-
-        // 渲染中间表格
-        this.$title = this.renderTitle(center);
-        this.$title.addEventListener('mousewheel', function(e) {
-
-            let scrollLeft = this.scrollLeft + e.deltaX;
-            self.scroll('title', { x: scrollLeft })
-            self.scroll('body', { x: scrollLeft })
-
-        });
-
-        this.$body = this.renderData(center);
-        this.$body.addEventListener('scroll', function(e) {
-            self.scroll('title', { x: this.scrollLeft })
-            self.scroll('leftBody', { y: this.scrollTop })
-            self.scroll('rightBody', { y: this.scrollTop })
-        })
 
         // 渲染左侧表格
         this.$leftTitle = this.renderTitle(left);
@@ -121,6 +107,26 @@ export default window.jTable = class jTable {
             self.scroll('body', { y: scrollTop, x: scrollLeft })
 
         });
+
+
+        // 渲染中间表格
+        this.$title = this.renderTitle(center);
+        this.$title.addEventListener('mousewheel', function(e) {
+
+            let scrollLeft = this.scrollLeft + e.deltaX;
+            self.scroll('title', { x: scrollLeft })
+            self.scroll('body', { x: scrollLeft })
+
+        });
+
+        this.$body = this.renderData(center);
+        this.$body.addEventListener('scroll', function(e) {
+            self.scroll('title', { x: this.scrollLeft })
+            self.scroll('leftBody', { y: this.scrollTop })
+            self.scroll('rightBody', { y: this.scrollTop })
+        })
+
+        
 
 
         this.setAdaptive(left, right);
@@ -321,7 +327,17 @@ export default window.jTable = class jTable {
         let ths = this.titles.map(i => {
             let th = createElement('th');
             th.$data = i;
-            th.innerHTML = `<div>${i.label}</div>`;
+            if (i.type == 'selection') {
+                // let checkb = new checkbox(th, {
+                //     onChange(n, o) {
+                //         console.log(n, o)
+                //     }
+                // });
+                th.className = 'j-center';
+                // console.log(checkb)
+            } else {
+                th.innerHTML = `<div>${i.label===undefined?'':i.label}</div>`;
+            }
 
             tr.appendChild(th);
             return th;
@@ -368,7 +384,7 @@ export default window.jTable = class jTable {
 
                 let td = createElement('td');
                 let value,
-                    key = t.key,
+                    key = t.key || '',
                     keys = key.split('.'),
                     render = t.render,
                     contentDom;

@@ -26,26 +26,72 @@
         height: 100%;
     }
 
+    .box {
+        width: 800px;
+        margin: 0 auto;
+    }
+
     #table {
         width: 100%;
+    }
+
+    #pagination {
+        margin: 20px 0;
     }
     </style>
 </head>
 
 <body>
-    <div><button id="update">更新数据</button></div>
-    <div id="table"></div>
+    <div class="box">
+        <div id="table"></div>
+        <div id="pagination"></div>
+    </div>
+    <script type="text/javascript" src="lib/j-simple-pagination/dist/index.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript">
     (function() {
 
-        var data = window.data;
-        console.log(data);
-        var table = new window.jTable('#table').setConfig({
-            height: 500
-        });
+        var data = (() => {
+                let array = [];
+                for (var i = 0; i < 2; i++) {
+                    let ary = [].concat(window.data);
+                    ary.sort(function() {
+                        return Math.random() > .5 ? -1 : 1;
+                    })
+                    array = array.concat(ary);
+                }
+                return array
+            })(),
+            pageSize = 6,
+            pageIndex = 1;
+        showCount = 4;
 
-        table.setTitle([{
+
+
+        function cutByLen(data, len) {
+            let result = []
+            for (var i = 0, length = data.length; i < length; i += len) {
+                result.push(data.slice(i, i + len));
+            }
+            return result;
+        }
+
+        var pageDatas = cutByLen(data, pageSize);
+
+        var table = new window.jTable('#table').setConfig({
+            // height: 500
+        }).setTitle([{
+            // type: 'selection',
+            width: 60,
+            fixed: true,
+            render: function(data) {
+                if (data.headPicFileName) {
+                    return [{
+                        html: '<div style="text-align:center;"><img src="' + data.headPicFileName + '" alt="" width="30" height="30" /></div>'
+                    }]
+                }
+            }
+        }, {
             label: '姓名',
             key: 'name',
             width: 100,
@@ -54,7 +100,6 @@
             label: '嵌套key.key',
             key: 'key.key',
             width: 100,
-            fixed: true
         }, {
             label: '医生 ID',
             key: 'userId',
@@ -136,24 +181,27 @@
             key: 'limitedPeriodTime',
             width: 100,
             fixed: 'right'
-        }])
-
-        table.setData(data);
+        }]);
 
 
-        table.render();
-
-        console.log(table)
-
-
-        document.getElementById('update').addEventListener('click', () => {
-            var array = [].concat(data);
-            array.sort(function() {
-                return Math.random() > .5 ? -1 : 1;
-            })
-            table.setData(array);
+        function changePage(i) {
+            var datas = pageDatas[i - 1];
+            console.log(datas, pageDatas)
+            table.setData(datas);
             table.render();
-        })
+        };
+        changePage(pageIndex)
+
+
+        var Pagination = new window.jSimplePagination('#pagination', {
+            pageSize: pageSize,
+            dataTotal: data.length,
+            pageIndex: pageIndex,
+            showCount: showCount,
+            onChange: function(data) {
+                changePage(data.pageIndex);
+            }
+        });
 
     })();
     </script>

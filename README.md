@@ -1,6 +1,6 @@
 # j-strong-table
 
-### <a href="//jenjieju.github.io/pc/#/jStrongTable">DEMO</a>
+### <a href="//jenjieju.github.io/pc/">DEMO</a>
 
 ### Installing
 
@@ -24,13 +24,20 @@
 <script type="text/javascript">
 (function() {
 
-    var data = window.data;
-    console.log(data);
-    var table = new window.jTable('#table').setConfig({
-        height: 500
-    });
-
-    table.setTitle([{
+var table = new window.jTable('#table').setConfig({
+        // height: 500
+    }).setTitle([{
+        // type: 'selection',
+        width: 60,
+        fixed: true,
+        render: function(data) {
+            if (data.headPicFileName) {
+                return [{
+                    html: '<div style="text-align:center;"><img src="' + data.headPicFileName + '" alt="" width="30" height="30" /></div>'
+                }]
+            }
+        }
+    }, {
         label: '姓名',
         key: 'name',
         width: 100,
@@ -39,7 +46,6 @@
         label: '嵌套key.key',
         key: 'key.key',
         width: 100,
-        fixed: true
     }, {
         label: '医生 ID',
         key: 'userId',
@@ -121,7 +127,7 @@
         key: 'limitedPeriodTime',
         width: 100,
         fixed: 'right'
-    }])
+    }]);
 
     table.setData(data);
 
@@ -129,16 +135,6 @@
     table.render();
 
     console.log(table)
-
-
-    document.getElementById('update').addEventListener('click', () => {
-        var array = [].concat(data);
-        array.sort(function() {
-            return Math.random() > .5 ? -1 : 1;
-        })
-        table.setData(array);
-        table.render();
-    })
 
 })();
 </script>
@@ -150,4 +146,6 @@
 0.0.3 update
 0.0.4 新增rander函数(支持自定义渲染元素，具体格式看例子)
 0.0.5 add demo
+0.0.6 update demo
+0.0.7 update:demo
 ```

@@ -1,6 +1,6 @@
 {
   "name": "j-strong-table",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "表格",
   "main": "j-strong-table",
   "scripts": {
@@ -36,7 +36,8 @@
     "webpack-dev-server": "^2.8.2"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0"
+    "babel-polyfill": "^6.26.0",
+    "j-simple-pagination": "0.0.4"
   },
   "repository": {
     "type": "git",
