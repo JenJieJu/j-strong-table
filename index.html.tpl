@@ -27,7 +27,7 @@
     }
 
     .box {
-        width: 800px;
+        /*width: 800px;*/
         margin: 0 auto;
     }
 
@@ -79,9 +79,12 @@
         var pageDatas = cutByLen(data, pageSize);
 
         var table = new window.jTable('#table').setConfig({
-            // height: 500
+            height: 500
         }).setTitle([{
-            // type: 'selection',
+            type: 'selection',
+            width: 60,
+            fixed: true,
+        },{
             width: 60,
             fixed: true,
             render: function(data) {

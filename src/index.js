@@ -9,9 +9,9 @@ if (!global || !global._babelPolyfill) {
 
 import './css.scss'
 import { isArray, isFunction } from './checkVariable.js'
-import { createElement, selectorElement, getDayDetail } from './tools.js'
+import { createElement, selectorElement, getDayDetail, createElementFromHTML } from './tools.js'
 import renderTreeHtml from './renderTreeHtml.js'
-// import checkbox from './checkbox.js'
+import checkbox from './checkbox.js'
 
 export default window.jTable = class jTable {
     /**
@@ -126,7 +126,7 @@ export default window.jTable = class jTable {
             self.scroll('rightBody', { y: this.scrollTop })
         })
 
-        
+
 
 
         this.setAdaptive(left, right);
@@ -259,7 +259,7 @@ export default window.jTable = class jTable {
         this.titles.map(i => {
             let th = createElement('col');
             th.$data = i;
-            th.innerHTML = `${i.label}`;
+            th.innerHTML = `${i.label||' '}`;
             th.width = `${i.width}`
             colgroup.appendChild(th);
             return th;
@@ -314,43 +314,48 @@ export default window.jTable = class jTable {
      * @return {dom}           table容器
      */
     renderTitle(dom, className = '') {
-        let container = createElement('div');
-        let table = createElement('table');
-        let thead = createElement('thead');
-        let tr = createElement('tr');
+        let container = createElementFromHTML(`<div class="j-table-title ${className}"></div>`);
 
-        container.className = 'j-table-title ' + className;
-        table.cellSpacing = 0;
-        table.cellPadding = 0;
-        table.border = 0;
+        let htmlArray = [{
+            data: this.titles,
+            html: `<table cellSpacing="0" cellPadding="0" border="0"></table>`,
+            child: [{
+                data: this.titles,
+                html: `<thead></thead>`,
+                child: [{
+                    data: this.titles,
+                    html: `<tr></tr>`,
+                    child: (() => {
+                        return this.titles.map(i => {
+                            let html = '',
+                                child = [];
+                            if (i.type == 'selection') {
+                                html = `<th></th>`;
+                            } else {
+                                html = `<th><div>${i.label===undefined?'':i.label}</div></th>`
+                            }
 
-        let ths = this.titles.map(i => {
-            let th = createElement('th');
-            th.$data = i;
-            if (i.type == 'selection') {
-                // let checkb = new checkbox(th, {
-                //     onChange(n, o) {
-                //         console.log(n, o)
-                //     }
-                // });
-                th.className = 'j-center';
-                // console.log(checkb)
-            } else {
-                th.innerHTML = `<div>${i.label===undefined?'':i.label}</div>`;
-            }
+                            return {
+                                data: i,
+                                html,
+                                child
+                            }
+                        });
 
-            tr.appendChild(th);
-            return th;
-        })
+                    })(),
 
+                }]
+            }],
+        }];
+
+
+
+        const table = renderTreeHtml(container, htmlArray).firstElementChild;
+
+        // 固定表头宽度
         this.renderColgroupToTarget(table);
 
-
-        dom
-            .appendChild(container)
-            .appendChild(table)
-            .appendChild(thead)
-            .appendChild(tr);
+        dom.appendChild(container);
 
         this.headerHeight = container.clientHeight;
 
@@ -364,69 +369,71 @@ export default window.jTable = class jTable {
      * @return {obj} table实例
      */
     renderData(dom, className = '') {
-        let container = createElement('div');
-        let table = createElement('table');
-        let tbody = createElement('tbody');
+
+        const bodyHeight = this.bodyHeight = this.height - this.headerHeight;
+
+        const container = createElementFromHTML(`<div class="j-table-body ${className}" style="height:${bodyHeight?bodyHeight+'px':''}"></div>`)
+
+        let htmlArray = [{
+            html: '<table cellSpacing="0" cellPadding="0" border="0"></table>',
+            child: [{
+                html: '<tbody></tbody>',
+                child: (() => {
+                    return this.data.map((d) => {
+
+                        return {
+                            html: `<tr></tr>`,
+                            data: d,
+                            child: this.titles.map(t => {
+
+                                let value,
+                                    key = t.key || '',
+                                    keys = key.split('.'),
+                                    render = t.render,
+                                    contentDom,
+                                    html,
+                                    child = [];
+
+                                // 嵌套
+                                if (keys.length > 1) {
+                                    value = d;
+                                    keys.map(k => {
+                                        if (value !== undefined) {
+                                            value = value[k];
+                                        }
+                                    })
+                                } else {
+                                    value = d[key];
+                                }
+
+                                if (isFunction(render)) {
+                                    child = render(d) || [];
+                                    html = '<td></td>'
+                                } else {
+                                    html = `<td>${value === undefined ? '' : value}</td>`;
+                                }
 
 
-        container.className = 'j-table-body ' + className;
-        table.cellSpacing = 0;
-        table.cellPadding = 0;
-        table.border = 0;
-        this.bodyHeight = this.height - this.headerHeight;
-        container.style.height = this.bodyHeight ? `${this.bodyHeight}px` : '';
+                                return {
+                                    data: d,
+                                    html,
+                                    child
+                                }
 
-        let trs = this.data.map((d) => {
-            let tr = createElement('tr');
-            tr.$data = d;
-
-            let tds = this.titles.map((t) => {
-
-                let td = createElement('td');
-                let value,
-                    key = t.key || '',
-                    keys = key.split('.'),
-                    render = t.render,
-                    contentDom;
-
-                // 嵌套
-                if (keys.length > 1) {
-                    value = d;
-                    keys.map(k => {
-                        if (value !== undefined) {
-                            value = value[k];
+                            })
                         }
                     })
-                } else {
-                    value = d[key];
-                }
+                })()
+            }]
+        }];
 
-                if (isFunction(render)) {
-                    contentDom = render(d);
-                    if (contentDom !== undefined) {
-                        let div = createElement('div');
-                        contentDom = renderTreeHtml(div, contentDom, d);
-                        td.appendChild(div);
-                    }
-                } else {
-                    td.innerHTML = `<div>${value === undefined ? '' : value}</div>`;
-                }
 
-                td.$data = d;
-                tr.appendChild(td);
-                return td;
-            })
-            tr.$tds = tds;
-            tbody.appendChild(tr);
-            return tr;
-        })
+        const table = renderTreeHtml(container, htmlArray).firstElementChild;
 
         this.renderColgroupToTarget(table);
 
         dom
             .appendChild(container)
-            .appendChild(table)
-            .appendChild(tbody)
 
         return container;
     }

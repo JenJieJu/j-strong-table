@@ -148,4 +148,5 @@ var table = new window.jTable('#table').setConfig({
 0.0.5 add demo
 0.0.6 update demo
 0.0.7 update:demo
+0.0.8 update:精简render函数
 ```

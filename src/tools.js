@@ -56,11 +56,14 @@ export const selectorElement = selector => {
  * @param  {string} htmlString html
  * @return {dom}            元素
  */
-export const createElementFromHTML = (htmlString) =>{
-  var div = document.createElement('div');
-  div.innerHTML = htmlString.trim();
+export const createElementFromHTML = (htmlString) => {
 
-  return div.firstChild; 
+    var parent = document.createElement('template');
+
+    parent.innerHTML = htmlString.trim();
+
+    let child = parent.content.firstElementChild;
+
+
+    return child;
 }
-
-

@@ -9,9 +9,13 @@ import { createElementFromHTML } from './tools.js'
 export default function depth(dom, contentArray = [], data) {
 
     if (isArray(contentArray)) {
-        contentArray.map(({ html, child = [], click = Function, events = [], attrs = [] }) => {
+        contentArray.map((config) => {
+
+            const { html, child = [], click = Function, events = [], attrs = [], onRendered } = config;
+
             if (isString(html) && html) {
                 let d = createElementFromHTML(html);
+                let _on = {};
 
                 attrs.map(({ key, value }) => {
                     if (isString(key) && isString(value)) {
@@ -23,6 +27,8 @@ export default function depth(dom, contentArray = [], data) {
                     if (isString(type) && isFunction(event)) {
                         d.addEventListener(type, (e) => {
                             event.apply({
+                                _on,
+                                config,
                                 data,
                                 $event: e,
                                 $dom: d,
@@ -30,13 +36,37 @@ export default function depth(dom, contentArray = [], data) {
                             });
                         });
                     }
-                })
+                });
+
+                _on.nodeReplace = function(contentArray = []) {
+                    let parent = this.$dom.parentNode;
+                    parent.innerHTML = '';
+                    depth(parent, contentArray, this.data);
+
+                }.bind({
+                    data,
+                    $dom: d,
+                });
+
 
                 dom.appendChild(d);
+
+
+                if (isFunction(onRendered)) {
+                    onRendered.apply({
+                        _on,
+                        config,
+                        data,
+                        $dom: d,
+                    })
+                }
+
+
                 depth(d, child, data);
             }
         })
 
     }
 
+    return dom;
 }
