@@ -1,8 +1,8 @@
-import renderTreeHtml from './renderTreeHtml.js'
+import renderTreeHtml from '@/renderTreeHtml.js'
 import './checkbox.scss'
-import { createElementFromHTML, watch } from './tools.js'
-import Watcher from './watcher.js'
-import { isFunction } from './checkVariable.js'
+import { createElementFromHTML, watch } from '@/tools.js'
+import Watcher from '@/watcher.js'
+import { isFunction } from '@/checkVariable.js'
 
 export default class checkbox {
     constructor(dom, config) {
@@ -10,7 +10,7 @@ export default class checkbox {
         this.config = config;
         this.initData();
         this.render(this.$dom);
-        
+
     }
     initData() {
         const { onChange } = this.config || {};
@@ -19,8 +19,8 @@ export default class checkbox {
             checked: false,
         }, (key, n, o) => {
             this.render(this.$dom);
-            if (key == 'checked') {
-                isFunction(onChange) && onChange(n, o);
+            if (key == 'checked' && n != o) {
+                isFunction(onChange) && onChange.call(this, n, o);
             }
         });
     }

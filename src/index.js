@@ -11,7 +11,7 @@ import './css.scss'
 import { isArray, isFunction } from './checkVariable.js'
 import { createElement, selectorElement, getDayDetail, createElementFromHTML } from './tools.js'
 import renderTreeHtml from './renderTreeHtml.js'
-import checkbox from './checkbox.js'
+import checkboxGroup from './checkboxGroup'
 
 export default window.jTable = class jTable {
     /**
@@ -44,6 +44,10 @@ export default window.jTable = class jTable {
         this.$rightBody;
         this.rightTableWidth = 0;
 
+        //复选框组
+        this.checkboxGroup;
+        this.chosen = [];
+
         return this
     }
     /**
@@ -55,7 +59,23 @@ export default window.jTable = class jTable {
         if (this.$container) {
             this.$container.remove();
             this.isSelectAll = false;
+
+            // 销毁复选框
+            if (this.checkboxGroup && this.checkboxGroup.destroy) {
+                this.checkboxGroup.destroy();
+            }
+
         }
+
+        let self = this;
+
+        this.checkboxGroup = new checkboxGroup({
+            defaultChosen: this.chosen,
+            onChange(data) {
+                self.chosen = data;
+                console.log(self.chosen.map(i=>i.name));
+            }
+        });
 
         const container = this.$container = createElement('div');
         const center = createElement('div');
@@ -74,10 +94,6 @@ export default window.jTable = class jTable {
         container.appendChild(center);
         container.appendChild(left);
         container.appendChild(right);
-
-
-
-        let self = this;
 
         // 渲染左侧表格
         this.$leftTitle = this.renderTitle(left);
@@ -334,11 +350,18 @@ export default window.jTable = class jTable {
                             } else {
                                 html = `<th><div>${i.label===undefined?'':i.label}</div></th>`
                             }
-
+                            let self = this;
                             return {
+                                type: i.type,
                                 data: i,
                                 html,
-                                child
+                                child,
+                                onRendered() {
+                                    const { $dom, config } = this;
+                                    if (config.type == 'selection') {
+                                        self.checkboxGroup.push($dom, {}, true);
+                                    }
+                                }
                             }
                         });
 
@@ -370,6 +393,7 @@ export default window.jTable = class jTable {
      */
     renderData(dom, className = '') {
 
+        const checkboxGroup = this.checkboxGroup;
         const bodyHeight = this.bodyHeight = this.height - this.headerHeight;
 
         const container = createElementFromHTML(`<div class="j-table-body ${className}" style="height:${bodyHeight?bodyHeight+'px':''}"></div>`)
@@ -415,9 +439,16 @@ export default window.jTable = class jTable {
 
 
                                 return {
+                                    type: t.type,
                                     data: d,
                                     html,
-                                    child
+                                    child,
+                                    onRendered() {
+                                        const { data, type } = this.config || {}, { $dom } = this;
+                                        if (type == 'selection') {
+                                            checkboxGroup.push($dom, d);
+                                        }
+                                    }
                                 }
 
                             })
